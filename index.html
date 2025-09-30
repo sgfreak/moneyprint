@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Pixel Graffiti</title>
+    <style>
+        /* --- Original styles maintained, with additions for credits and music UI --- */
+        @import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+        /* --- win98 theme css thingy --- */
+        :root {
+            /* Default: Windows 98 Theme */
+            --font-main: 'Pixelify Sans', 'MS Sans Serif', sans-serif;
+            --font-mono: 'Courier New', Courier, monospace;
+            --bg-color: #008080;
+            --text-color: #000000;
+            --window-bg: #C0C0C0;
+            --title-bar-bg: #000080;
+            --title-bar-text: #FFFFFF;
+            --border-highlight: #FFFFFF;
+            --border-shadow: #000000;
+            --border-inset-shadow: gray;
+            --border-inset-highlight: #FFFFFF;
+            --button-padding: 8px 12px;
+            --window-border-radius: 0;
+            --component-border-radius: 0;
+            --window-box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            --button-border-width: 2px;
+            --button-border-style: solid;
+            --background-content: none;
+        }
+
+        body.theme-dark {
+            --bg-color: #121212;
+            --text-color: #E0E0E0;
+            --window-bg: #2a2a2a;
+            --title-bar-bg: #00005a;
+            --title-bar-text: #E0E0E0;
+            --border-highlight: #555555;
+            --border-shadow: #000000;
+            --border-inset-shadow: #000000;
+            --border-inset-highlight: #555555;
+        }
+
+        body.theme-3d {
+            --font-main: 'Poppins', sans-serif;
+            --bg-color: #e8e8e8;
+            --text-color: #333;
+            --window-bg: #f0f0f0;
+            --title-bar-bg: linear-gradient(to bottom, #7b9cde, #5a7edc);
+            --title-bar-text: #FFFFFF;
+            --window-border-radius: 8px;
+            --component-border-radius: 4px;
+            --window-box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            --border-highlight: #fdfdfd;
+            --border-shadow: #b4b4b4;
+            --button-border-style: outset;
+        }
+
+        body.theme-cute-pink {
+            --font-main: 'Poppins', sans-serif;
+            --bg-color: #ffefff;
+            --text-color: #5b2c6f;
+            --window-bg: #ffffff;
+            --title-bar-bg: #f9a8d4;
+            --title-bar-text: #5b2c6f;
+            --border-highlight: #ffffff;
+            --border-shadow: #f472b6;
+            --border-inset-shadow: #fbcfe8;
+            --border-inset-highlight: #ffffff;
+            --window-border-radius: 12px;
+            --component-border-radius: 8px;
+            --window-box-shadow: 0 4px 15px rgba(244, 114, 182, 0.2);
+            --button-border-width: 1px;
+        }
+
+        body.theme-vaporwave {
+            --font-main: 'Pixelify Sans', sans-serif;
+            --bg-color: #0d0221;
+            --text-color: #01cdfe;
+            --window-bg: rgba(26, 1, 62, 0.85);
+            --title-bar-bg: #ff71ce;
+            --title-bar-text: #0d0221;
+            --border-highlight: #01cdfe;
+            --border-shadow: #ff71ce;
+            --border-inset-shadow: #ff71ce;
+            --border-inset-highlight: #01cdfe;
+            --window-box-shadow: 0 0 20px #ff71ce, 0 0 10px #01cdfe;
+            --background-content: 
+                linear-gradient(to top, rgba(13, 2, 33, 1) 0%, rgba(13, 2, 33, 0) 50%),
+                repeating-linear-gradient(0deg, transparent, transparent 49.5%, #ff71ce 50%, transparent 50.5%),
+                repeating-linear-gradient(90deg, transparent, transparent 49.5%, #ff71ce 50%, transparent 50.5%);
+            --background-size: 100% 100%, 50px 50px, 50px 50px;
+        }
+
+        body.theme-matrix {
+            --font-main: 'VT323', monospace;
+            --font-mono: 'VT323', monospace;
+            --bg-color: #000000;
+            --text-color: #00FF00;
+            --window-bg: rgba(0, 10, 0, 0.8);
+            --title-bar-bg: #00FF00;
+            --title-bar-text: #000000;
+            --border-highlight: #00FF00;
+            --border-shadow: #00FF00;
+            --border-inset-shadow: #005a00;
+            --border-inset-highlight: #00ff00;
+            --button-border-width: 1px;
+            --window-box-shadow: 0 0 15px #00ff0033;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: var(--background-content);
+            background-size: var(--background-size, cover);
+            z-index: -1;
+            background-position: 0 0;
+        }
+
+        .theme-vaporwave::before { animation: moveGrid 10s linear infinite; }
+        @keyframes moveGrid {
+            from { background-position: 0 0; }
+            to { background-position: 0 -100px; }
+        }
+
+        .window {
+            background-color: var(--window-bg);
+            border-top: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-highlight);
+            border-left: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-highlight);
+            border-right: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-shadow);
+            border-bottom: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-shadow);
+            box-shadow: var(--window-box-shadow);
+            border-radius: var(--window-border-radius);
+            padding: 3px;
+            width: 95%;
+            max-width: 800px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+            z-index: 1;
+        }
+
+        .title-bar {
+            background: var(--title-bar-bg);
+            color: var(--title-bar-text);
+            padding: 4px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+            user-select: none;
+            border-top-left-radius: var(--window-border-radius);
+            border-top-right-radius: var(--window-border-radius);
+            cursor: move;
+        }
+
+        .window-content {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .group-box {
+            border: 1px solid var(--border-shadow);
+            box-shadow: 1px 1px 0 0 var(--border-highlight) inset;
+            border-radius: var(--component-border-radius);
+            padding: 20px 15px 15px 15px;
+            position: relative;
+            margin-top: 10px;
+        }
+
+        .group-box-legend {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: var(--window-bg);
+            padding: 0 5px;
+            font-size: 16px;
+        }
+
+        .button, .select-style {
+            background-color: var(--window-bg);
+            border-top: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-highlight);
+            border-left: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-highlight);
+            border-right: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-shadow);
+            border-bottom: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-shadow);
+            border-radius: var(--component-border-radius);
+            padding: var(--button-padding);
+            font-family: var(--font-main);
+            color: var(--text-color);
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .button:active {
+            border-top: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-shadow);
+            border-left: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-shadow);
+            border-right: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-highlight);
+            border-bottom: var(--button-border-width, 2px) var(--button-border-style, solid) var(--border-highlight);
+        }
+
+        #fileName {
+            flex-grow: 1;
+            padding: 5px;
+            background-color: var(--border-highlight);
+            border: 1px solid var(--border-shadow);
+            box-shadow: 1px 1px 0 0 var(--border-inset-shadow) inset;
+            border-radius: var(--component-border-radius);
+            font-family: var(--font-main);
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        #asciiOutput {
+            background: var(--border-highlight);
+            border: 1px solid var(--border-shadow);
+            box-shadow: 1px 1px 0 0 var(--border-inset-shadow) inset;
+            border-radius: var(--component-border-radius);
+            padding: 10px;
+            font-family: var(--font-mono);
+            color: var(--text-color);
+            font-size: 8px;
+            line-height: 1.0;
+            white-space: pre;
+            overflow: auto;
+            flex-grow: 1;
+            min-height: 250px;
+            letter-spacing: 0.5px;
+            word-break: break-all;
+        }
+
+        .theme-matrix #asciiOutput { font-size: 12px; }
+
+        input[type="file"] { display: none; }
+
+        .row { display: flex; align-items: center; gap: 10px; }
+
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            display: none;
+        }
+        body.theme-matrix #matrixCanvas {
+            display: block;
+        }
+
+        /* --- New: Site credits styles (bottom-left) --- */
+        .site-credits {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            background-color: var(--window-bg);
+            border: 2px solid;
+            border-color: var(--border-highlight) var(--border-shadow) var(--border-shadow) var(--border-highlight);
+            box-shadow: var(--window-box-shadow);
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            border-radius: var(--component-border-radius);
+        }
+        .credit-thumb {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .credit-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 0.9em;
+        }
+        .credit-username {
+            font-weight: bold;
+        }
+        .credit-note {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+        
+        /* --- music --- */
+        .music-controls {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            background-color: var(--window-bg);
+            border: 2px solid;
+            border-color: var(--border-highlight) var(--border-shadow) var(--border-shadow) var(--border-highlight);
+            box-shadow: var(--window-box-shadow);
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            border-radius: var(--component-border-radius);
+        }
+        .music-controls button {
+            padding: 5px 8px;
+            font-size: 14px;
+            min-width: 30px;
+        }
+        .music-controls input[type="range"] {
+            width: 80px;
+        }
+
+        /* --- fuck you all mobile users --- */
+        @media (max-width: 768px) {
+            body { padding: 8px; }
+            .window { padding: 1px; min-height: 90vh; }
+            .window-content { padding: 8px; }
+            .site-credits {
+                bottom: 10px;
+                left: 10px;
+                gap: 8px;
+                padding: 6px;
+            }
+            .credit-thumb {
+                width: 30px;
+                height: 30px;
+            }
+             .credit-text {
+                font-size: 0.8em;
+            }
+            .music-controls {
+                left: auto;
+                right: 10px;
+                bottom: 10px;
+                justify-content: space-around;
+            }
+        }
+    </style>
+</head>
+<body class="theme-win98">
+    <canvas id="matrixCanvas"></canvas>
+
+    <div class="window" id="draggableWindow">
+        <div class="title-bar">
+            <span>C:\SGFrEAK_ASCII_v3.exe</span>
+        </div>
+        <div class="window-content">
+            <!-- Settings Group -->
+            <div class="group-box">
+                <span class="group-box-legend">Settings</span>
+                <div class="row">
+                    <label for="themeSelector">UI Theme:</label>
+                    <select id="themeSelector" class="select-style">
+                        <option value="theme-win98">Windows 98</option>
+                        <option value="theme-dark">Dark Mode</option>
+                        <option value="theme-3d">Modern 3D</option>
+                        <option value="theme-cute-pink">Cute Pink</option>
+                        <option value="theme-vaporwave">Vaporwave</option>
+                        <option value="theme-matrix">Matrix</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Upload Group -->
+            <div class="group-box">
+                <span class="group-box-legend">Image File</span>
+                <div class="row">
+                    <label for="imageLoader" class="button">Browse...</label>
+                    <input type="text" id="fileName" placeholder="No file selected..." readonly>
+                </div>
+                <input type="file" id="imageLoader" name="imageLoader" accept="image/*"/>
+            </div>
+
+            <!-- Result Group -->
+            <div class="group-box" style="flex-grow: 1; display: flex; flex-direction: column;">
+                <span class="group-box-legend">Resulting ASCII Art</span>
+                <pre id="asciiOutput">Your image's ASCII art will appear here...</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- down left -->
+    <div class="site-credits">
+        <img src="https://image2url.com/images/1759253414155-8ddb1844-336a-4def-9646-0b10e971411f.jpg" alt="Art by sgfreak" class="credit-thumb">
+        <div class="credit-text">
+            <span class="credit-username">@sgfreak</span>
+            <span class="credit-note">Site by @sgfreak</span>
+        </div>
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <!-- Hidden YouTube Player -->
+    <div id="player-container" style="position: absolute; top: -9999px; left: -9999px;">
+        <div id="player"></div>
+    </div>
+
+    <!-- Visible Music Controls -->
+    <div class="music-controls">
+        <button id="playPauseBtn" class="button" title="Play/Pause">▶</button>
+        <input id="volumeSlider" type="range" min="0" max="100" value="50" title="Volume">
+    </div>
+
+    <script>
+        // --- Original logic for ASCII conversion and themes (maintained) ---
+        const imageLoader = document.getElementById('imageLoader');
+        const fileNameDisplay = document.getElementById('fileName');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const asciiOutput = document.getElementById('asciiOutput');
+        const themeSelector = document.getElementById('themeSelector');
+        const body = document.body;
+        const asciiChars = "`.-':_,^=;><+!rc*/z?sLTv)J7(|Fi{C}fI31tlu[neoZ5Yxjya]2ESwqkP6h9d4VpOGbUAKXHm8RD#$Bg0MNWQ%&@";
+        const reversedChars = asciiChars.split('').reverse().join('');
+
+        imageLoader.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            fileNameDisplay.value = file.name;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    asciiOutput.textContent = 'Processing, please wait...';
+                    setTimeout(() => generateAscii(img), 50);
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        function generateAscii(img) {
+            const maxWidth = 150;
+            const aspectRatioCorrection = 0.5;
+            const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+            const newWidth = img.width * scale;
+            const newHeight = img.height * scale * aspectRatioCorrection;
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            ctx.drawImage(img, 0, 0, newWidth, newHeight);
+            const imageData = ctx.getImageData(0, 0, newWidth, newHeight).data;
+            let asciiString = '';
+            for (let y = 0; y < newHeight; y++) {
+                for (let x = 0; x < newWidth; x++) {
+                    const offset = (y * newWidth + x) * 4;
+                    const brightness = (0.299 * imageData[offset] + 0.587 * imageData[offset + 1] + 0.114 * imageData[offset + 2]) / 255;
+                    const charIndex = Math.floor(brightness * (reversedChars.length - 1));
+                    asciiString += reversedChars[charIndex];
+                }
+                asciiString += '\n';
+            }
+            asciiOutput.textContent = asciiString;
+        }
+
+        function applyTheme(theme) {
+            body.className = '';
+            body.classList.add(theme);
+            localStorage.setItem('ascii_theme', theme);
+            themeSelector.value = theme;
+        }
+
+        themeSelector.addEventListener('change', (e) => {
+            applyTheme(e.target.value);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('ascii_theme') || 'theme-win98';
+            applyTheme(savedTheme);
+        });
+        
+        // Matrix Effect
+        const matrixCanvas = document.getElementById('matrixCanvas');
+        const matrixCtx = matrixCanvas.getContext('2d');
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const alphabet = katakana + latin + nums;
+        const fontSize = 16;
+        const columns = matrixCanvas.width / fontSize;
+        const rainDrops = Array.from({ length: columns }).fill(1);
+        function drawMatrix() {
+            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+            matrixCtx.fillStyle = '#0F0';
+            matrixCtx.font = fontSize + 'px monospace';
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                matrixCtx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+                if (rainDrops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 33);
+        
+        // --- New: Logic to drag the window ---
+        const draggableWindow = document.getElementById('draggableWindow');
+        const titleBar = draggableWindow.querySelector('.title-bar');
+        let isDragging = false;
+        let offset = { x: 0, y: 0 };
+        
+        titleBar.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            offset.x = e.clientX - draggableWindow.offsetLeft;
+            offset.y = e.clientY - draggableWindow.offsetTop;
+            titleBar.style.cursor = 'grabbing';
+        });
+        
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            titleBar.style.cursor = 'move';
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            let newX = e.clientX - offset.x;
+            let newY = e.clientY - offset.y;
+            draggableWindow.style.left = `${newX}px`;
+            draggableWindow.style.top = `${newY}px`;
+        });
+
+
+        // --- New: YouTube IFrame API Integration for background music ---
+        let player;
+        let userPaused = true; // Start paused
+        const playlistId = 'PLDBE356760333E542';
+
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '1',
+                width: '1',
+                playerVars: {
+                    listType: 'playlist',
+                    list: playlistId,
+                    autoplay: 0, // Don't autoplay initially
+                    controls: 0,
+                    loop: 1,
+                    rel: 0,
+                    iv_load_policy: 3
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            const volumeSlider = document.getElementById('volumeSlider');
+            player.setVolume(volumeSlider.value);
+            // Music won't start until the user clicks play
+        }
+
+        function onPlayerStateChange(event) {
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            // Keep music playing if not paused by the user
+            if (event.data === YT.PlayerState.PAUSED && !userPaused) {
+                player.playVideo();
+            }
+            // Update button icon
+            if (event.data === YT.PlayerState.PLAYING) {
+                playPauseBtn.textContent = '❚❚';
+            } else {
+                playPauseBtn.textContent = '▶';
+            }
+        }
+
+        // Music controls logic
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!player) return;
+            const playerState = player.getPlayerState();
+            if (playerState === YT.PlayerState.PLAYING) {
+                userPaused = true;
+                player.pauseVideo();
+            } else {
+                userPaused = false;
+                player.playVideo();
+            }
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            if (player && player.setVolume) {
+                player.setVolume(e.target.value);
+            }
+        });
+
+    </script>
+</body>
+</html>
+
